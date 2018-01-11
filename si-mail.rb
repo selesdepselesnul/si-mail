@@ -8,7 +8,7 @@ else
   begin
     
       cli = HighLine.new
-      password = cli.ask("Enter your password:  ") { |q| q.echo = "x" }
+      password = cli.ask("Enter your password:  ") { |q| q.echo = "*" }
       email = ARGV[0]
       opt = ARGV[1]
 
@@ -20,8 +20,8 @@ else
           puts "nothing to be delete"
         else
           all_email.each do |x|
-          puts "remove message -> #" + x.uid.to_s
-          x.delete!
+            puts "remove message -> #" + x.inspect.to_s
+            x.delete!
           end
         end
         
