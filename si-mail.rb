@@ -20,17 +20,22 @@ else
           puts "nothing to be delete"
         else
           all_email.each do |x|
-            puts "remove message -> #" + x.inspect.to_s
+            puts "remove message -> " + x.inspect.to_s
             x.delete!
           end
         end
         
         gmail.logout
-
+      elsif opt == "--delete-read"
+        gmail = Gmail.new(email, password)
+        unread_email = gmail.inbox.emails(:read)
+        unread_email.each do |x|
+          puts "remove message -> " + x.inspect.to_s
+          x.delete!
+        end
       else
         puts "option doesnt valid!"
       end
-
   rescue Exception => e
     puts "Error running script: " + e.message
   end
