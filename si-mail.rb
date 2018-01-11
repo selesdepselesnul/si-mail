@@ -14,12 +14,19 @@ else
 
       if opt == "--delete-all"
         gmail = Gmail.new(email, password)
+        all_email = gmail.inbox.emails(:all)
 
-        gmail.inbox.emails(:all).each do |x|
+        if all_email.length == 0
+          puts "nothing to be delete"
+        else
+          all_email.each do |x|
           puts "remove message -> #" + x.uid.to_s
           x.delete!
+          end
         end
+        
         gmail.logout
+
       else
         puts "option doesnt valid!"
       end
