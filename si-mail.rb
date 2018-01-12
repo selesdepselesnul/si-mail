@@ -25,11 +25,12 @@ class SiMail
      @gmail.logout
    end
 
-   def send_text!(emails, message)
+   def send_text!(emails, subject, message)
 
      emails.each { |x|
        @gmail.deliver do
          to x
+         subject subject
          text_part do
            body message
          end
@@ -39,12 +40,12 @@ class SiMail
      @gmail.logout
    end
 
-   def send_text_from_file!(emails, filename)
+   def send_text_from_file!(emails, subject, filename)
      s_builder = StringIO.new
      IO.foreach(File.join(Dir.pwd, filename)) do |x|
          s_builder << x
      end
-     send_text!(emails, s_builder.string)
+     send_text!(emails, subject, s_builder.string)
    end
    
 end
@@ -54,9 +55,9 @@ def extract_emails(x)
 end
 
 def send_email!(argv)
-  if argv.count == 4
+  if argv.count == 5
     emails = extract_emails(argv[2])
-    yield(emails, argv[3])
+    yield(emails, argv[3], argv[4])
   else
     puts "argument too few"
   end
@@ -81,12 +82,12 @@ else
       when opt == "--delete-read"
         simail.delete!(:read)
       when opt == "--send-txt"
-        send_email!(ARGV) { |emails, message|
-          simail.send_text!(emails, message)
+        send_email!(ARGV) { |emails, subject, message|
+          simail.send_text!(emails, subject, message)
         }
       when opt == "--send-txt-from"
-        send_email!(ARGV) { |emails, message|
-          simail.send_text_from_file!(emails, message)
+        send_email!(ARGV) { |emails, subject, message|
+          simail.send_text_from_file!(emails, subject, message)
         }
       else
         puts "option doesnt valid!"
