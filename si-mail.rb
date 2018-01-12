@@ -39,9 +39,11 @@ else
       simail = SiMail.new(email, password)
 
       opt = ARGV[1]
-      if opt == "--delete-all"
+
+      case
+      when opt == "--delete-all"
         simail.delete!(:all)
-      elsif opt == "--delete-read"
+      when opt == "--delete-read"
         simail.delete!(:read)
       else
         puts "option doesnt valid!"
