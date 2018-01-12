@@ -6,11 +6,12 @@ class SiMail
    def initialize(email, password)
     @email = email
     @password = password
+    @gmail = Gmail.new(@email, @password)
    end
 
    def delete!(flag)
-     gmail = Gmail.new(@email, @password)
-     emails = gmail.inbox.emails(flag)
+     
+     emails = @gmail.inbox.emails(flag)
 
      if emails.length == 0
        puts "nothing to be delete"
@@ -21,7 +22,21 @@ class SiMail
        end
      end
   
-     gmail.logout
+     @gmail.logout
+   end
+
+   def send!(emails, message)
+
+     emails.each { |x|
+       @gmail.deliver do
+         to x
+         text_part do
+           body message
+         end
+       end
+     }
+
+     @gmail.logout
    end
    
 end
@@ -45,6 +60,14 @@ else
         simail.delete!(:all)
       when opt == "--delete-read"
         simail.delete!(:read)
+      when opt == "--send"
+        if ARGV.count == 4
+          emails = ARGV[2].strip.split(",")
+          simail.send!(emails,
+                       ARGV[3])
+        else
+          puts "argument too few"
+        end
       else
         puts "option doesnt valid!"
       end
