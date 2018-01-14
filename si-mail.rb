@@ -56,12 +56,24 @@ class SiMail
      @gmail.logout
    end
 
-   def send_text_from_file!(emails, subject, filename)
+   def send_from_file!(filename)
      s_builder = StringIO.new
      IO.foreach(File.join(Dir.pwd, filename)) do |x|
          s_builder << x
      end
-     send_text!(emails, subject, s_builder.string)
+     yield(s_builder.string)
+   end
+
+   def send_text_from_file!(emails, subject, filename)
+     send_from_file!(filename) {
+       |x| send_text!(emails, subject, x)
+     }
+   end
+
+   def send_html_from_file!(emails, subject, filename)
+     send_from_file!(filename) {
+       |x| send_html!(emails, subject, x)
+     }
    end
    
 end
@@ -108,6 +120,10 @@ else
       when opt == "--send-html"
         send_email!(ARGV) { |emails, subject, message|
           simail.send_html!(emails, subject, message)
+        }
+      when opt == "--send-html-from"
+        send_email!(ARGV) { |emails, subject, message|
+          simail.send_html_from_file!(emails, subject, message)
         }
       else
         puts "option doesnt valid!"
